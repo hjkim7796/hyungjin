@@ -1,10 +1,12 @@
 package com.hyungjin.rest.control;
 
 import java.util.Collection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,7 @@ import com.hyungjin.rest.repository.UserRepository;
 public class UserControl {
 	
 	static Logger logger = LoggerFactory.getLogger(UserControl.class);
+	final StopWatch w = new StopWatch();
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView index()
@@ -28,6 +31,7 @@ public class UserControl {
         
         Collection<User> users = this.userRepository.findAll();
         modelAndView.addObject("users", users);
+        
          
         return modelAndView;
     }
@@ -36,15 +40,27 @@ public class UserControl {
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	@Transactional
 	Collection<User> findAll() {
-		logger.info("List...");
-		return this.userRepository.findAll();
+		
+		try {
+			w.start("/list");
+			return this.userRepository.findAll();
+		} finally {
+			w.stop();
+	        logger.info(w.prettyPrint());
+		}
 	}
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	@Transactional
 	public User findById(@PathVariable("id") Long id) {
 		logger.info(id.toString());
-		return this.userRepository.findOne(id);
+		final StopWatch w = new StopWatch("/id");
+		try {
+			return this.userRepository.findOne(id);
+		} finally {
+			w.stop();
+	        logger.info(w.toString());
+		}
 	}
 	
 	@RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)

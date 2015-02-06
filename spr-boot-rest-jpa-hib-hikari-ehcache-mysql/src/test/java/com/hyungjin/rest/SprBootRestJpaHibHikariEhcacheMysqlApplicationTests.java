@@ -12,9 +12,8 @@ import com.hyungjin.rest.SprBootRestJpaHibHikariEhcacheMysqlApplication;
 @SpringApplicationConfiguration(classes = SprBootRestJpaHibHikariEhcacheMysqlApplication.class)
 @WebAppConfiguration
 public class SprBootRestJpaHibHikariEhcacheMysqlApplicationTests {
-
+	
 	@Test
 	public void contextLoads() {
 	}
-
 }
