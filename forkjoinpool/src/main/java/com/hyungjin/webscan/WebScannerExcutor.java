@@ -12,8 +12,8 @@ import java.util.HashSet;
  */
 public class WebScannerExcutor implements LinkHandler {
 
-	private final Collection<String> visitedLinks = new HashSet<String>();
-    //private final Collection<String> visitedLinks = Collections.synchronizedSet(new HashSet<String>());
+	//private final Collection<String> visitedLinks = new HashSet<String>();
+    private final Collection<String> visitedLinks = Collections.synchronizedSet(new HashSet<String>());
 //    private final Collection<String> visitedLinks = Collections.synchronizedList(new ArrayList<String>());    
     private String url;
     private ExecutorService execService;
