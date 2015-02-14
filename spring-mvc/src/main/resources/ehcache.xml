@@ -12,8 +12,8 @@
         <persistence strategy="localTempSwap" />
     </defaultCache>
  
-    <cache name="SnmpIfEntry" maxEntriesLocalHeap="10000" eternal="false"
-        timeToIdleSeconds="5" timeToLiveSeconds="0">
+    <cache name="SnmpIfEntry" maxEntriesLocalHeap="500000" eternal="false"
+        timeToIdleSeconds="30" timeToLiveSeconds="0">
         <persistence strategy="localTempSwap" />
     </cache>
  
