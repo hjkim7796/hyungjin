@@ -13,9 +13,9 @@ public class SprBootRestJpaHibHikariEhcacheMysqlApplication {
     public static void main(String[] args) {
     	ApplicationContext ctx = SpringApplication.run(SprBootRestJpaHibHikariEhcacheMysqlApplication.class, args);
     	UserRepository bean = ctx.getBean( UserRepository.class );
-    	bean.deleteAll();
+    	//bean.deleteAll();
     	int id=1;
-    	for(int i=1;i <=10;i++) {
+    	for(int i=1;i <=1000;i++) {
     		try {
     			bean.save(new User("userId"+id, "User"+id,"passwd"+id,"user"+id + "@email.com"));
     		} catch(Exception e){}
