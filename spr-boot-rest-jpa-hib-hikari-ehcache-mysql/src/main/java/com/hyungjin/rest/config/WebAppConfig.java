@@ -43,12 +43,6 @@ public class WebAppConfig {
 	@Bean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-		Properties jpaProperties = new Properties();
-
-        jpaProperties.setProperty("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.EhCacheRegionFactory");
-        //jpaProperties.setProperty("net.sf.ehcache.configurationResourceName","/ehcache.xml");
-        
-        entityManagerFactoryBean.setJpaProperties(jpaProperties);
 		entityManagerFactoryBean.setDataSource(hikariDataSource());
 		entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
 		
