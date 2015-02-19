@@ -22,7 +22,6 @@ import com.hyungjin.rest.repository.UserRepository;
 public class UserControl {
 	
 	static Logger logger = LoggerFactory.getLogger(UserControl.class);
-	final StopWatch w = new StopWatch();
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView index()
@@ -40,7 +39,7 @@ public class UserControl {
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	@Transactional
 	Collection<User> findAll() {
-		
+		StopWatch w = new StopWatch();
 		try {
 			w.start("/list");
 			return this.userRepository.findAll();
@@ -53,13 +52,13 @@ public class UserControl {
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	@Transactional
 	public User findById(@PathVariable("id") Long id) {
-		logger.info(id.toString());
-		final StopWatch w = new StopWatch("/id");
+		StopWatch w = new StopWatch();
 		try {
+			w.start("/" + id);
 			return this.userRepository.findOne(id);
 		} finally {
 			w.stop();
-	        logger.info(w.toString());
+	        logger.info(w.prettyPrint());
 		}
 	}
 	
@@ -69,7 +68,7 @@ public class UserControl {
 		logger.info("ID: " + id.toString());
 		logger.info("Input: " + user.toString());
 		User _user = this.userRepository.findOne(id);
-		if( _user != null && _user.getUserId().equals(user.getUserId()) ) {
+		if( _user != null/* && _user.getUserId().equals(user.getUserId()) */) {
 			_user.setEmail(user.getEmail());
 			_user.setPassword(user.getPassword());
 			_user.setUserName(user.getUserName());

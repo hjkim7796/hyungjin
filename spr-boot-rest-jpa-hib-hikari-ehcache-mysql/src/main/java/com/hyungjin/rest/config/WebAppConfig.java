@@ -1,8 +1,14 @@
 package com.hyungjin.rest.config;
 
+import net.sf.ehcache.config.CacheConfiguration;
 
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
+import org.springframework.cache.interceptor.KeyGenerator;
+import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -15,13 +21,12 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import javax.sql.DataSource;
 
+import java.net.URL;
 import java.util.Properties;
  
 @Configuration
+@EnableCaching
 public class WebAppConfig {
-	
-    @Autowired
-    Environment env;
  
     @Bean
     public DataSource hikariDataSource() {
@@ -41,13 +46,25 @@ public class WebAppConfig {
 		Properties jpaProperties = new Properties();
 
         jpaProperties.setProperty("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.EhCacheRegionFactory");
-        jpaProperties.setProperty("net.sf.ehcache.configurationResourceName","/ehcache.xml");
+        //jpaProperties.setProperty("net.sf.ehcache.configurationResourceName","/ehcache.xml");
         
+        entityManagerFactoryBean.setJpaProperties(jpaProperties);
 		entityManagerFactoryBean.setDataSource(hikariDataSource());
 		entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
-		entityManagerFactoryBean.setJpaProperties(jpaProperties);
+		
 		return entityManagerFactoryBean;
 	}
+	
+  	@Bean(destroyMethod="shutdown")
+    public net.sf.ehcache.CacheManager ehCacheManager() {
+  		URL url = getClass().getResource("/ehcache.xml");
+  		return net.sf.ehcache.CacheManager.newInstance(url);
+    }
+  	
+    @Bean
+    public CacheManager cacheManager() {
+        return new EhCacheCacheManager(ehCacheManager());
+    }
 	
   	@Bean
 	public JpaTransactionManager transactionManager() {

@@ -18,7 +18,9 @@ public class SprBootRestJpaHibHikariEhcacheMysqlApplication {
     	for(int i=1;i <=1000;i++) {
     		try {
     			bean.save(new User("userId"+id, "User"+id,"passwd"+id,"user"+id + "@email.com"));
-    		} catch(Exception e){}
+    		} catch(Exception e){
+    			break;
+    		}
     		id++;
     	}
     }
