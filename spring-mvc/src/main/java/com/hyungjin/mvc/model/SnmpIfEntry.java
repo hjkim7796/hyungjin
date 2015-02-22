@@ -7,12 +7,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(name = "SnmpIfEntry")
-@Cache(usage=CacheConcurrencyStrategy.READ_WRITE,region="SnmpIfEntry")
+//@Cache(usage=CacheConcurrencyStrategy.READ_WRITE,region="SnmpIfEntry")
 public class SnmpIfEntry {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -21,8 +18,12 @@ public class SnmpIfEntry {
 	
 	@Column(unique = true, nullable = false)
 	private Integer ifIndex;
+	
+	@Column(length = 100)
 	private String ifDescr;
 	private Integer ifSpeed;
+	
+	@Column(length = 20)
 	private String ifPhysAddress;
 	private Integer ifAdminStatus;
 	private Integer ifOperStatus;

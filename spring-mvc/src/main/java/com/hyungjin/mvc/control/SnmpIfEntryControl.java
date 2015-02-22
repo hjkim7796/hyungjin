@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StopWatch;
@@ -30,35 +31,55 @@ public class SnmpIfEntryControl {
 	static Logger logger = LoggerFactory.getLogger(SnmpIfEntryControl.class);
 	final StopWatch w = new StopWatch();
 
-	@RequestMapping(value = "/list", method = RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET)
 	@Transactional
     public ModelAndView findAll()
     {
-		Collection<SnmpIfEntry> snmpIfEntryList = this.snmpIfEntryRepository.findAll();
-        
-        ModelAndView mav = new ModelAndView("snmpIfEntry-list");
-        mav.addObject("snmpIfEntryList", snmpIfEntryList);
-        return mav;
+		return findAllOrderBy("ifIndex");
     }
 	
-	@RequestMapping(value = "/list/{orderby}", method = RequestMethod.GET)
+	@RequestMapping(value = "/sort/{orderby}", method = RequestMethod.GET)
 	@Transactional
     public ModelAndView findAllOrderBy(@PathVariable("orderby") String orderByName)
     {
+		StopWatch w = new StopWatch();
+		w.start("/sort");
+		
 		Collection<SnmpIfEntry> snmpIfEntryList = this.snmpIfEntryRepository.findAll(sortByName(orderByName));
-        
         ModelAndView mav = new ModelAndView("snmpIfEntry-list");
         mav.addObject("snmpIfEntryList", snmpIfEntryList);
+        
+		w.stop();
+        logger.info(w.prettyPrint());
         return mav;
     }
+	
+	
+	/*@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	@Transactional
+    public ModelAndView findById(@PathVariable("id") Long id)
+    {
+		SnmpIfEntry snmpIfEntry = this.snmpIfEntryRepository.findOne(id);
+        
+        ModelAndView mav = new ModelAndView("snmpIfEntry-detail");
+        mav.addObject("snmpIfEntry", snmpIfEntry);
+        return mav;
+    }*/
+	
+	/*@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	@Transactional
+    public SnmpIfEntry findById(@PathVariable("id") Long id)
+    {
+		return this.snmpIfEntryRepository.findOne(id);
+    }*/
 	
 	private Sort sortByName(String name) {
         return new Sort(Sort.Direction.ASC, name);
     }
 	
-	@RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	@Transactional
-	public ModelAndView editSnmpIfEntry(@PathVariable("id") Long id) {
+	public ModelAndView findOne(@PathVariable("id") Long id) {
 		SnmpIfEntry snmpIfEntry = this.snmpIfEntryRepository.findOne(id);
 		
 		ModelAndView mav = new ModelAndView("snmpIfEntry-edit");
@@ -67,8 +88,8 @@ public class SnmpIfEntryControl {
 
 	}
 
-	@RequestMapping(value = "/edit/{id}", method = RequestMethod.POST)
-	public ModelAndView editSnmpIfEntry(@ModelAttribute @Validated SnmpIfEntry snmpIfEntry,
+	@RequestMapping(value = "/{id}", method = RequestMethod.POST)
+	public ModelAndView update(@ModelAttribute @Validated SnmpIfEntry snmpIfEntry,
 			BindingResult result, @PathVariable Long id,
 			final RedirectAttributes redirectAttributes) throws SnmpIfEntryNotFound {
 
@@ -78,28 +99,33 @@ public class SnmpIfEntryControl {
 		SnmpIfEntry _snmpIfEntry = this.snmpIfEntryRepository.findOne(id);
 		_snmpIfEntry.setIfAdminStatus(snmpIfEntry.getIfAdminStatus());
 		this.snmpIfEntryRepository.save( _snmpIfEntry );
+		cacheManager.getCache("SnmpIfEntry").clear();
 		
-		ModelAndView mav = new ModelAndView("redirect:/snmpIfEntry/list.html");
+		ModelAndView mav = new ModelAndView("redirect:/snmpIfEntry");
+		
 		return mav;
 	}
 	
-	@RequestMapping(value="/delete", method=RequestMethod.DELETE)
+	@RequestMapping(value="/delete", method=RequestMethod.GET)
 	public ModelAndView deleteAll(final RedirectAttributes redirectAttributes) throws SnmpIfEntryNotFound {
-		
-		ModelAndView mav = new ModelAndView("redirect:/snmpIfEntry/list.html");		
 		this.snmpIfEntryRepository.deleteAll();
-		return mav;
+		cacheManager.getCache("SnmpIfEntry").clear();
+		return new ModelAndView("redirect:/snmpIfEntry");	
 	}
 	
 	@RequestMapping(value="/delete/{id}", method=RequestMethod.GET)
-	public ModelAndView deleteSnmpIfEntry(@PathVariable Long id,
+	public ModelAndView delete(@PathVariable Long id,
 			final RedirectAttributes redirectAttributes) throws SnmpIfEntryNotFound {
 		
-		ModelAndView mav = new ModelAndView("redirect:/snmpIfEntry/list.html");		
 		this.snmpIfEntryRepository.delete(id);
-		return mav;
+		cacheManager.getCache("SnmpIfEntry").clear();
+		
+		return new ModelAndView("redirect:/snmpIfEntry");		
 	}
 		
 	@Autowired
 	SnmpIfEntryRepository snmpIfEntryRepository;
+	
+	@Autowired
+	CacheManager cacheManager;
 }

@@ -1,8 +1,10 @@
 package com.hyungjin.mvc.config;
 
-
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -13,17 +15,16 @@ import org.springframework.orm.hibernate4.HibernateExceptionTranslator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import javax.sql.DataSource;
 
-import java.util.Properties;
+import java.net.URL;
  
 @Configuration
-@EnableWebMvc
+@EnableCaching
 @EnableTransactionManagement
 @ComponentScan("com.hyungjin.mvc")
 @PropertySource("classpath:application.properties")
@@ -48,17 +49,28 @@ public class WebAppConfig {
 	@Bean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-		Properties jpaProperties = new Properties();
+		//Properties jpaProperties = new Properties();
 
-        jpaProperties.setProperty("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.EhCacheRegionFactory");
-        jpaProperties.setProperty("net.sf.ehcache.configurationResourceName","/ehcache.xml");
+        //jpaProperties.setProperty("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.EhCacheRegionFactory");
+        //jpaProperties.setProperty("net.sf.ehcache.configurationResourceName","/ehcache.xml");
         
 		entityManagerFactoryBean.setDataSource(hikariDataSource());
 		entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
-		entityManagerFactoryBean.setJpaProperties(jpaProperties);
+		//entityManagerFactoryBean.setJpaProperties(jpaProperties);
 		return entityManagerFactoryBean;
 	}
 	
+  	@Bean(destroyMethod="shutdown")
+    public net.sf.ehcache.CacheManager ehCacheManager() {
+  		URL url = getClass().getResource("/ehcache.xml");
+  		return net.sf.ehcache.CacheManager.newInstance(url);
+    }
+  	
+    @Bean
+    public CacheManager cacheManager() {
+        return new EhCacheCacheManager(ehCacheManager());
+    }
+    
   	@Bean
 	public JpaTransactionManager transactionManager() {
 		JpaTransactionManager transactionManager = new JpaTransactionManager();

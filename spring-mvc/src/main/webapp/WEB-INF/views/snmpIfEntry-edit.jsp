@@ -9,7 +9,10 @@
 </head>
 <body>
 <h1>Edit SnmpIfEntry page</h1>
-<form:form method="POST" commandName="snmpIfEntry" action="${pageContext.request.contextPath}/snmpIfEntry/edit/${snmpIfEntry.id}.html" >
+<br/>
+<a href="${pageContext.request.contextPath}/">Home page</a>
+<br/><br/>
+<form:form method="POST" commandName="snmpIfEntry" action="${pageContext.request.contextPath}/snmpIfEntry/${snmpIfEntry.id}" >
 <table>
 <tbody>
 <tr>
@@ -25,6 +28,5 @@
 </tbody>
 </table>
 </form:form>
-<a href="${pageContext.request.contextPath}/">Home page</a>
 </body>
 </html>

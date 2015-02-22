@@ -12,7 +12,7 @@
 Welcome!!. My name is HyungJin Kim".<br/>
 <i>${message}</i><br/>
 <%-- <a href="${pageContext.request.contextPath}/shop/create.html">Create a new shop</a><br/> --%>
-<a href="${pageContext.request.contextPath}/snmpIfEntry/list.html">View all snmpIfEntry</a><br/>
+<a href="${pageContext.request.contextPath}/snmpIfEntry/">View all snmpIfEntry</a><br/>
 </p>
 </body>
 </html>
