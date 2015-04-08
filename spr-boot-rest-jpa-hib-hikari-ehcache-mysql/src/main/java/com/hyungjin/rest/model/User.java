@@ -14,11 +14,12 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Table(name = "USER")
 @Cache(usage=CacheConcurrencyStrategy.READ_WRITE,region="user")
 public class User {
-	@Id
+	/*@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name = "ID", unique = true, nullable = false, length = 10)
-	private Long id;
+	private Long id;*/
 	
+	@Id
 	@Column(name = "USERID", unique = true, nullable = false, length = 100)
 	private String userId;
 	
@@ -44,13 +45,13 @@ public class User {
 		
 	}
 
-	public Long getId() {
+	/*public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
-	}
+	}*/
 
 	public String getUserId() {
 		return userId;
@@ -86,10 +87,17 @@ public class User {
 
 	@Override
 	public String toString() {
+		return "User [userId=" + userId + ", userName=" + userName
+				+ ", password=" + password + ", email=" + email + "]";
+	}
+
+	
+/*	@Override
+	public String toString() {
 		return "User [id=" + id + ", userId=" + userId + ", userName="
 				+ userName + ", password=" + password + ", email=" + email
 				+ "]";
-	}
+	}*/
 
 	
 }

@@ -7,10 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.hyungjin.rest.model.User;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, String> {
 	@Override
 	@Cacheable(value = "user")
 	List<User> findAll();
-	User findByUserId(String userId);
+	User findOne(String userId);
 	User findByEmail(String email);
 }

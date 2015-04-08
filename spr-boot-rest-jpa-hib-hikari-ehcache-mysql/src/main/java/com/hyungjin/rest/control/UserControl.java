@@ -35,13 +35,13 @@ public class UserControl {
 		}
 	}
 	
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{userId}", method = RequestMethod.GET)
 	@Transactional
-	public User findById(@PathVariable("id") Long id) {
+	public User findById(@PathVariable("userId") String userId) {
 		StopWatch w = new StopWatch();
 		try {
-			w.start("/" + id);
-			return this.userRepository.findOne(id);
+			w.start("/" + userId);
+			return this.userRepository.findOne(userId);
 		} finally {
 			w.stop();
 	        logger.info(w.prettyPrint());
@@ -67,15 +67,15 @@ public class UserControl {
 		return user;
 	}
 	
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
 	@Transactional
-	public User update(@PathVariable("id") Long id, @RequestBody User user) {
-		logger.info("ID: " + id.toString());
+	public User update(@PathVariable("userId") String userId, @RequestBody User user) {
+		logger.info("ID: " + userId);
 		logger.info("Input: " + user.toString());
-		User _user = this.userRepository.findOne(id);
+		User _user = this.userRepository.findOne(userId);
 		//update or create user
 		if(_user != null || user.getUserId() != null) {
-			user.setId(id);
+			user.setUserId(userId);
 			return this.userRepository.save( user );
 		}
 		
@@ -86,7 +86,7 @@ public class UserControl {
 	@Transactional
     public User add(@RequestBody User user) {
 		logger.info(user.toString());
-		User _user = this.userRepository.findByUserId(user.getUserId());
+		User _user = this.userRepository.findOne(user.getUserId());
 		if(_user == null) {
 			return this.userRepository.save( user );
 		}
@@ -101,10 +101,10 @@ public class UserControl {
         return "The User was successfully deleted.";
     }
     
-    @RequestMapping(value="/{id}", method=RequestMethod.DELETE)
+    @RequestMapping(value="/{userId}", method=RequestMethod.DELETE)
     @Transactional
-    public String delete(@PathVariable Long id) throws Exception {
-        this.userRepository.delete(id);
+    public String delete(@PathVariable String userId) throws Exception {
+        this.userRepository.delete(userId);
         return "The User was successfully deleted.";
     }
 	@Autowired
