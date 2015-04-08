@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.hyungjin.rest.model.User;
 import com.hyungjin.rest.repository.UserRepository;
@@ -24,19 +23,6 @@ public class UserControl {
 	static Logger logger = LoggerFactory.getLogger(UserControl.class);
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-    public ModelAndView index()
-    {
-		ModelAndView modelAndView = new ModelAndView("list-of-users");
-        
-        Collection<User> users = this.userRepository.findAll();
-        modelAndView.addObject("users", users);
-        
-         
-        return modelAndView;
-    }
-	
-	
-	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	@Transactional
 	Collection<User> findAll() {
 		StopWatch w = new StopWatch();
@@ -62,13 +48,13 @@ public class UserControl {
 		}
 	}
 	
-	@RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	@Transactional
 	public User update(@PathVariable("id") Long id, @RequestBody User user) {
 		logger.info("ID: " + id.toString());
 		logger.info("Input: " + user.toString());
 		User _user = this.userRepository.findOne(id);
-		if( _user != null/* && _user.getUserId().equals(user.getUserId()) */) {
+		if( _user != null && _user.getUserId().equals(user.getUserId()) ) {
 			_user.setEmail(user.getEmail());
 			_user.setPassword(user.getPassword());
 			_user.setUserName(user.getUserName());
@@ -77,7 +63,7 @@ public class UserControl {
 		throw new RuntimeException();
 	}
 
-	@RequestMapping(value = "/add", method=RequestMethod.POST)
+	@RequestMapping(value = "/", method=RequestMethod.POST)
 	@Transactional
     public User add(@RequestBody User user) {
 		logger.info(user.toString());
@@ -89,7 +75,7 @@ public class UserControl {
         
     }
 	
-    @RequestMapping(value="/delete/{id}", method=RequestMethod.DELETE)
+    @RequestMapping(value="/{id}", method=RequestMethod.DELETE)
     @Transactional
     public String delete(@PathVariable Long id) throws Exception {
         this.userRepository.delete(id);
