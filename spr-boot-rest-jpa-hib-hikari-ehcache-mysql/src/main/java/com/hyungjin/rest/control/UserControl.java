@@ -24,7 +24,7 @@ public class UserControl {
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	@Transactional
-	Collection<User> findAll() {
+	public Collection<User> findAll() {
 		StopWatch w = new StopWatch();
 		try {
 			w.start("/list");
@@ -48,18 +48,37 @@ public class UserControl {
 		}
 	}
 	
+	@RequestMapping(value = "/", method = RequestMethod.PUT)
+	@Transactional
+	public User update(@RequestBody User user) {
+		logger.info("Input: " + user.toString());
+		Collection<User> users = this.userRepository.findAll();
+		for(User _user: users)
+		{
+			if(user.getEmail() != null)
+				_user.setEmail(user.getEmail());
+			if(user.getPassword() != null)
+				_user.setPassword(user.getPassword());
+			if(user.getUserName() != null)
+				_user.setUserName(user.getUserName());
+			
+			this.userRepository.save( _user );
+		}
+		return user;
+	}
+	
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	@Transactional
 	public User update(@PathVariable("id") Long id, @RequestBody User user) {
 		logger.info("ID: " + id.toString());
 		logger.info("Input: " + user.toString());
 		User _user = this.userRepository.findOne(id);
-		if( _user != null && _user.getUserId().equals(user.getUserId()) ) {
-			_user.setEmail(user.getEmail());
-			_user.setPassword(user.getPassword());
-			_user.setUserName(user.getUserName());
-			return _user;
+		//update or create user
+		if(_user != null || user.getUserId() != null) {
+			user.setId(id);
+			return this.userRepository.save( user );
 		}
+		
 		throw new RuntimeException();
 	}
 
@@ -75,6 +94,13 @@ public class UserControl {
         
     }
 	
+    @RequestMapping(value="/", method=RequestMethod.DELETE)
+    @Transactional
+    public String delete() throws Exception {
+        this.userRepository.deleteAll();
+        return "The User was successfully deleted.";
+    }
+    
     @RequestMapping(value="/{id}", method=RequestMethod.DELETE)
     @Transactional
     public String delete(@PathVariable Long id) throws Exception {
